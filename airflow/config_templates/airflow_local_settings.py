@@ -193,6 +193,7 @@ if REMOTE_LOGGING:
                 'formatter': 'airflow',
                 'base_log_folder': str(os.path.expanduser(BASE_LOG_FOLDER)),
                 'gcs_log_folder': REMOTE_BASE_LOG_FOLDER,
+                'gcs_gzip_log': False,
                 'filename_template': FILENAME_TEMPLATE,
             },
         }

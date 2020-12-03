@@ -33,13 +33,14 @@ class GCSTaskHandler(FileTaskHandler, LoggingMixin):
     uploads to and reads from GCS remote storage. Upon log reading
     failure, it reads from host machine's local disk.
     """
-    def __init__(self, base_log_folder, gcs_log_folder, filename_template):
+    def __init__(self, base_log_folder, gcs_log_folder, filename_template, gcs_gzip_log=False):
         super().__init__(base_log_folder, filename_template)
         self.remote_base = gcs_log_folder
         self.log_relative_path = ''
         self._hook = None
         self.closed = False
         self.upload_on_close = True
+        self.gzip = gcs_gzip_log
 
     @cached_property
     def hook(self):
@@ -163,7 +164,7 @@ class GCSTaskHandler(FileTaskHandler, LoggingMixin):
                 # upload from within the file context (it hasn't been
                 # closed).
                 tmpfile.flush()
-                self.hook.upload(bkt, blob, tmpfile.name)
+                self.hook.upload(bkt, blob, tmpfile.name, gzip=self.gzip)
         except Exception as e:  # pylint: disable=broad-except
             self.log.error('Could not write logs to %s: %s', remote_log_location, e)
 
